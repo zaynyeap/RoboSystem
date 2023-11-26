@@ -78,17 +78,17 @@ void loop() {
 // Robot active, travel straight
     digitalWrite( L_DIR, LOW );
     digitalWrite( R_DIR, LOW );
-    analogWrite( L_PWM, 60 );
-    analogWrite( R_PWM, 60 );
+    analogWrite( L_PWM, 100 );
+    analogWrite( R_PWM, 100 );
 
-// Record data every 100 ms (0.1 second)
-   if (millis() - dataRecord_ts >= 100) {
+// Record data every 100 ms (0.1 second) >= 100, 50ms (0.05 second) >= 50
+   if (millis() - dataRecord_ts >= 10) {
       dataRecord_ts = millis();
       recordDataAcc();
     }
 
     // Transition to finished state after some condition
-   if (millis() - update_ts > 10000) {  // Example: after 5 seconds
+   if (millis() - update_ts > 1000) {  // e.g.: after 5 seconds
      state = STATE_FINISHED_EXPERIMENT;
     }
   } else if (state == STATE_FINISHED_EXPERIMENT) {
@@ -102,20 +102,20 @@ void loop() {
     
 void recordDataAcc() {
   imu.read();
-  //float accelX_mg = imu.a.x * 0.122;
-  float accelY_mg = imu.a.y * 0.122;
+  float accelX_mg = imu.a.x * 0.122;
+  //float accelY_mg = imu.a.y * 0.122;
 
-  //filteredAccelX = (alpha * accelX_mg) + ((1 - alpha) * filteredAccelX);
-  filteredAccelY = (alpha * accelY_mg) + ((1 - alpha) * filteredAccelY);
+  filteredAccelX = (alpha * accelX_mg) + ((1 - alpha) * filteredAccelX);
+  //filteredAccelY = (alpha * accelY_mg) + ((1 - alpha) * filteredAccelY);
 
   // Store data in results array
   if (resultIndex < RESULTS_DIM ) {
     //results[currentExperiment][resultIndex++] = filteredAccelX;
-    results[resultIndex++] = filteredAccelY;
+    results[resultIndex++] = filteredAccelX;
     Serial.print("Recording Data at Index: ");
     Serial.print(resultIndex - 1);
     Serial.print(", Value: ");
-    Serial.println(filteredAccelY, 3);
+    Serial.println(filteredAccelX, 3);
   }
 }
 
